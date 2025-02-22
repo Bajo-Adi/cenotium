@@ -6,6 +6,7 @@ import sys
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import Qt, QUrl
 from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineSettings
+import subprocess
 
 
 class Sandbox(SandboxBase):
@@ -24,7 +25,7 @@ class Sandbox(SandboxBase):
     def kill(self):
         # Kill the streaming process along with the sandbox
         if hasattr(self, "process"):
-            self.process.kill()
+            subprocess.call(["taskkill", "/F", "/T", "/PID", str(self.process.pid)])
         super().kill()
 
 
@@ -78,14 +79,14 @@ class Browser:
         import os
 
         # Script to launch a minimal web view
-        script_path = os.path.join(os.path.dirname(__file__), 'browser_script.py')
+        script_path = os.path.join(os.path.dirname(__file__), "browser_script.py")
 
         try:
             # Start the browser script as a subprocess
             self.process = subprocess.Popen(
                 [sys.executable, script_path, stream_url, title],
                 stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL
+                stderr=subprocess.DEVNULL,
             )
         except Exception as e:
             print(f"Failed to start browser: {e}")
@@ -93,9 +94,9 @@ class Browser:
     def stop(self):
         if self.process:
             try:
-                os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
+                subprocess.call(["taskkill", "/F", "/T", "/PID", str(self.process.pid)])
                 self.process = None
             except ProcessLookupError:
                 print("Browser process not found.")
             except Exception as e:
-                print(f"Failed to stop browser: {e}") 
+                print(f"Failed to stop browser: {e}")
