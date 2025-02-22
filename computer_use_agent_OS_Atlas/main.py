@@ -24,7 +24,7 @@ async def start(user_input=None, output_dir=None, added_context=None):
     client = None
     message = None
     try:
-        sandbox = Sandbox(template="desktop-dev-v2")
+        sandbox = Sandbox(template="desktop-dev-v2", timeout=2000)
 
         # The display server won't work on desktop-dev-v2 since ffmpeg is not installed
         # client = DisplayClient(output_dir)
@@ -32,9 +32,9 @@ async def start(user_input=None, output_dir=None, added_context=None):
         # stream_url = sandbox.start_stream()
         # print("(The display client will start in five seconds.)")
         # If the display client is opened before the stream is ready, it will close immediately
-        # await client.start(stream_url, user_input or "Sandbox", delay=5)
+        # await client.start(stream_url, user_input or ",Sandbox", delay=5)
 
-        agent = SandboxAgent(sandbox, output_dir)
+        agent = SandboxAgent(sandbox, output_dir, additional_context=added_context)
 
         print("Starting the VNC server...")
         sandbox.vnc_server.start()

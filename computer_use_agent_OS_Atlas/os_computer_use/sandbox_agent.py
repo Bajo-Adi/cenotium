@@ -25,13 +25,14 @@ tools = {
 
 class SandboxAgent:
 
-    def __init__(self, sandbox, output_dir=".", save_logs=True):
+    def __init__(self, sandbox, output_dir=".", save_logs=True, additional_context=""):
         super().__init__()
         self.messages = []  # Agent memory
         self.sandbox = sandbox  # E2B sandbox
         self.latest_screenshot = None  # Most recent PNG of the scren
         self.image_counter = 0  # Current screenshot number
         self.tmp_dir = tempfile.mkdtemp()  # Folder to store screenshots
+        self.additional_context = ""  # User specific context
 
         # Set the log file location
         if save_logs:
@@ -167,6 +168,8 @@ class SandboxAgent:
                         "This means the objective is: [complete|not complete]\n\n"
                         "(Only continue if the objective is not complete.)\n"
                         "The next step is to [click|type|run the shell command] [put the next single step here] in order to [put what you expect to happen here].",
+                        "User Specific Details and Context: {self.additional_context}. YOU MUST USE THIS TO OPTIMIZE THE NEXT STEP TO TAKE AND REACH THE OBJECTIVE FASTER!",
+                        "[put your detailed thoughts about user behavior here]",
                     ],
                     role="user",
                 ),
@@ -189,7 +192,7 @@ class SandboxAgent:
         should_continue = True
         while should_continue:
             # Stop the sandbox from timing out
-            self.sandbox.set_timeout(60)
+            self.sandbox.set_timeout(600)
             content, tool_calls = action_model.call(
                 [
                     Message(
