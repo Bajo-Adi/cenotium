@@ -2,60 +2,38 @@
 2 Streams: Video Feed and Text from the Agent decisions being made
 """
 
-import cv2
-import numpy as np
-import requests
-from flask import Flask, Response
+from flask import Flask, render_template_string, send_from_directory
+import os
 
-app = Flask(__name__)
-
-# FFmpeg is already running and serving the stream here
-STREAM_URL = "http://localhost:8080"  # Change if needed
+app = Flask(__name__, static_folder="hls")
 
 
-def generate_mjpeg():
-    """Fetches the existing FFmpeg stream and serves it as MJPEG."""
-    print("Client connected, fetching stream...")
-
-    with requests.get(STREAM_URL, stream=True) as response:
-        chunk_size = 1024 * 64  # Read in chunks (adjust if needed)
-        buffer = b""  # Buffer to store incomplete frame data
-
-        for chunk in response.iter_content(chunk_size):
-            buffer += chunk
-
-            # Find MPEG-TS frame boundaries (basic sync)
-            start_idx = buffer.find(b"\x00\x00\x01")  # Start of an MPEG frame
-            if start_idx != -1:
-                frame_data = buffer[start_idx:]
-                buffer = b""  # Clear buffer after extracting frame
-
-                # Convert MPEG-TS frame to OpenCV image
-                np_frame = np.frombuffer(frame_data, np.uint8)
-                frame = cv2.imdecode(np_frame, cv2.IMREAD_COLOR)
-
-                if frame is None:
-                    continue  # Skip invalid frames
-
-                # Convert frame to JPEG format
-                success, jpeg = cv2.imencode(".jpg", frame)
-                if not success:
-                    continue
-
-                # Yield MJPEG frame
-                yield (
-                    b"--frame\r\n"
-                    b"Content-Type: image/jpeg\r\n\r\n" + jpeg.tobytes() + b"\r\n"
-                )
+@app.route("/")
+def index():
+    html = """
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>HLS Streaming Viewer</title>
+      </head>
+      <body>
+        <h1>HLS Streaming (M3U8)</h1>
+        <video width="800" height="600" controls autoplay>
+          <source src="/stream.m3u8" type="application/x-mpegURL">
+        </video>
+        <p>If the video does not play, your browser may not support HLS natively.</p>
+      </body>
+    </html>
+    """
+    return render_template_string(html)
 
 
-@app.route("/stream")
-def stream():
-    """Serves the live stream only when accessed."""
-    return Response(
-        generate_mjpeg(), mimetype="multipart/x-mixed-replace; boundary=frame"
-    )
+# Optional: Serve files from the hls directory explicitly
+@app.route("/<path:filename>")
+def serve_hls(filename):
+    return send_from_directory(app.static_folder, filename)
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    # Run the Flask server on port 5001 (or any port you prefer)
+    app.run(host="0.0.0.0", port=5001, debug=True)

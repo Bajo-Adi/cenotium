@@ -19,17 +19,17 @@ os.environ["E2B_API_KEY"] = os.getenv("E2B_API_KEY")
 async def start(user_input=None, output_dir=None):
     sandbox = None
     client = None
-    
+
     try:
         sandbox = Sandbox(template="desktop-dev-v2")
 
         # The display server won't work on desktop-dev-v2 since ffmpeg is not installed
-        #client = DisplayClient(output_dir)
-        #print("Starting the display server...")
-        #stream_url = sandbox.start_stream()
-        #print("(The display client will start in five seconds.)")
+        # client = DisplayClient(output_dir)
+        # print("Starting the display server...")
+        # stream_url = sandbox.start_stream()
+        # print("(The display client will start in five seconds.)")
         # If the display client is opened before the stream is ready, it will close immediately
-        #await client.start(stream_url, user_input or "Sandbox", delay=5)
+        # await client.start(stream_url, user_input or "Sandbox", delay=5)
 
         agent = SandboxAgent(sandbox, output_dir)
 
@@ -60,7 +60,7 @@ async def start(user_input=None, output_dir=None):
                     user_input = None
 
     finally:
-        #if client:
+        # if client:
         #    print("Stopping the display client...")
         #    try:
         #        await client.stop()
@@ -74,7 +74,7 @@ async def start(user_input=None, output_dir=None):
             except Exception as e:
                 print(f"Error stopping sandbox: {str(e)}")
 
-        #if client:
+        # if client:
         #    print("Saving the stream as mp4...")
         #    try:
         #        await client.save_stream()
