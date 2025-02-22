@@ -6,7 +6,7 @@ import argparse
 import threading
 import os_computer_use.streaming_api
 from os_computer_use.streaming_api import run_flask
-
+import json
 import os
 from dotenv import load_dotenv
 
@@ -19,7 +19,7 @@ load_dotenv()
 os.environ["E2B_API_KEY"] = os.getenv("E2B_API_KEY")
 
 
-async def start(user_input=None, output_dir=None):
+async def start(user_input=None, output_dir=None, added_context=None):
     sandbox = None
     client = None
 
@@ -48,23 +48,64 @@ async def start(user_input=None, output_dir=None):
         flask_thread.setDaemon(True)
         flask_thread.start()
 
-        while True:
-            # Ask for user input, and exit if the user presses ctl-c
-            if user_input is None:
-                try:
-                    user_input = input("USER: ")
-                except KeyboardInterrupt:
-                    break
-            # Run the agent, and go back to the prompt if the user presses ctl-c
-            else:
-                try:
-                    agent.run(user_input)
-                    user_input = None
-                except KeyboardInterrupt:
-                    user_input = None
-                except Exception as e:
-                    logger.print_colored(f"An error occurred: {e}", "red")
-                    user_input = None
+        if user_input is None:
+            return json.dumps(
+                {
+                    "status": "error",
+                    "error_code": "EMPTY_INPUT",
+                    "message": "The input query is empty. Please provide a valid prompt.",
+                    "suggestions": [
+                        "Ensure that the --prompt argument is passed when running the script.",
+                        "Provide a non-empty string as input.",
+                        "Check if the calling function correctly supplies the user input.",
+                    ],
+                },
+                indent=4,
+            )
+
+        # Run the agent, and go back to the prompt if the user presses ctl-c
+        else:
+            message = None
+            try:
+                response = agent.run(
+                    user_input, added_context=added_context
+                )  # Handed off to the black-box agent
+                message = json.dumps(
+                    {
+                        "status": "success",
+                        "message": "Agent processed the request successfully.",
+                        "response": response,
+                    },
+                    indent=4,
+                )
+            except KeyboardInterrupt:
+                logger.warning("User interrupted the execution via keyboard input.")
+                message = json.dumps(
+                    {
+                        "status": "error",
+                        "error_code": "USER_INTERRUPTED",
+                        "message": "Execution was interrupted by the user.",
+                        "suggestions": [
+                            "Restart the script if you stopped it accidentally.",
+                            "Use a proper exit command instead of a keyboard interrupt.",
+                        ],
+                    },
+                    indent=4,
+                )
+            except Exception as e:
+                logger.error(f"An unexpected error occurred: {e}")
+                message = json.dumps(
+                    {
+                        "status": "error",
+                        "error_code": "UNKNOWN_ERROR",
+                        "message": "An unexpected error occurred. Please check the logs for details.",
+                        "suggestions": [
+                            "Try restarting the script.",
+                            "Check for missing dependencies or incorrect configurations.",
+                        ],
+                    },
+                    indent=4,
+                )
 
     finally:
         # if client:
@@ -94,6 +135,8 @@ async def start(user_input=None, output_dir=None):
         except Exception as e:
             print(f"Error stopping VNC client: {str(e)}")
 
+        return message
+
 
 def initialize_output_directory(directory_format):
     run_id = 1
@@ -105,9 +148,26 @@ def initialize_output_directory(directory_format):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--prompt", type=str, help="User prompt for the agent")
+    parser.add_argument(
+        "--prompt", type=str, required=True, help="User prompt for the agent"
+    )
+    # Added context for the task at hand
+    parser.add_argument(
+        "--context",
+        type=str,
+        default="",
+        help="Additional context to provide to the agent",
+    )
     args = parser.parse_args()
 
     output_dir = initialize_output_directory(lambda id: f"./output/run_{id}")
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(start(user_input=args.prompt, output_dir=output_dir))
+    return loop.run_until_complete(
+        start(
+            user_input=args.prompt,
+            output_dir=output_dir,
+            added_context=(
+                parser.context if parser.context else None
+            ),  # May or may not exist
+        )
+    )

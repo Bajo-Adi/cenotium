@@ -112,7 +112,9 @@ class SandboxAgent:
         params={"text": "Text to type"},
     )
     def type_text(self, text):
-        self.sandbox.write(text, chunk_size=TYPING_GROUP_SIZE, delay_in_ms=TYPING_DELAY_MS)
+        self.sandbox.write(
+            text, chunk_size=TYPING_GROUP_SIZE, delay_in_ms=TYPING_DELAY_MS
+        )
         return "The text has been typed."
 
     def click_element(self, query, click_command, action_name="click"):
@@ -168,16 +170,14 @@ class SandboxAgent:
             ]
         )
 
-    def run(self, instruction):
-
-        self.messages.append(Message(f"OBJECTIVE: {instruction}"))
+    # Added context is any user preferences
+    def run(self, instruction, added_context=None):  # The agent running function
+        self.messages.append(Message(f"OBJECTIVE: {instruction}"))  # To the Model
         logger.log(f"USER: {instruction}", print=False)
-
         should_continue = True
         while should_continue:
             # Stop the sandbox from timing out
             self.sandbox.set_timeout(60)
-
             content, tool_calls = action_model.call(
                 [
                     Message(
