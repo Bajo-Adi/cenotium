@@ -3,6 +3,9 @@ from os_computer_use.sandbox_agent import SandboxAgent
 from os_computer_use.logging import Logger
 import asyncio
 import argparse
+import threading
+import os_computer_use.streaming_api
+from os_computer_use.streaming_api import run_flask
 
 import os
 from dotenv import load_dotenv
@@ -40,6 +43,10 @@ async def start(user_input=None, output_dir=None):
         print("Starting the VNC client...")
         browser = Browser()
         browser.start(vnc_url, user_input or "Sandbox")
+
+        flask_thread = threading.Thread(target=run_flask)
+        flask_thread.setDaemon(True)
+        flask_thread.start()
 
         while True:
             # Ask for user input, and exit if the user presses ctl-c
