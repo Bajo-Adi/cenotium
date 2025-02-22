@@ -174,9 +174,15 @@ class SandboxAgent:
         )
 
     # Added context is any user preferences
-    def run(self, instruction, added_context=None):  # The agent running function
-        # Fixing
-        # response = run_agent(instruction, added_context)
+    async def run(self, instruction, added_context=None):  # The agent running function
+        # NO NEED FOR FURTHER PLANNING!
+        # try:
+        #     response = await format_and_run_query(instruction, added_context)
+        # except Exception as e:
+        #     print(f"Error running agent: {e}")
+        #     return None
+
+        # Need to wait
         # logger.log(f"ORIGINAL FORMATTED QUERY: {response}")
         self.messages.append(Message(f"OBJECTIVE: {instruction}"))  # To the Model
         logger.log(f"USER: {instruction}", print=False)

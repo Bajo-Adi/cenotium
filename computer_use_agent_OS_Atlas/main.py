@@ -66,9 +66,8 @@ async def start(user_input=None, output_dir=None, added_context=None):
         # Run the agent, and go back to the prompt if the user presses ctl-c
         else:
             try:
-                response = agent.run(
-                    user_input, added_context=added_context
-                )  # Handed off to the black-box agent
+                response = await agent.run(user_input, added_context)
+                # Handed off to the black-box agent
                 message = json.dumps(
                     {
                         "status": "success",

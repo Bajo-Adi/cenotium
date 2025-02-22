@@ -341,7 +341,7 @@ async def format_and_run_query(query: str, user_context: str = ""):
 
     # Format the input with context (if provided)
     detailed_prompt = (
-        f"User Query: {query}\nUser Context: {user_context}. Combine the two into a detailed, unmabiguous prompt and return it."
+        f"User Query: {query}\nUser Context: {user_context}. Combine the two into a detailed, unmabiguous prompt and return it. YOU CAN PLAN ONLY ONCE!"
         if user_context
         else query
     )
