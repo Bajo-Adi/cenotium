@@ -25,6 +25,7 @@ image_path = "capture.jpg"
 text_log_path = "os_computer_use/task_operator_log.txt"
 
 
+# ISSUE: IDEALLY SHOULD END ON LACK OF A FRAME
 def generate_frames():
     """
     Continuously reads 'capture.jpg' and streams it as MJPEG.
@@ -39,7 +40,6 @@ def generate_frames():
                 if not os.path.exists(image_path):
                     # "No incoming capture" -> break the stream
                     print("[WARNING] capture.jpg not found, ending video stream.")
-                    break
 
                 # Read the latest image into memory
                 with open(image_path, "rb") as f:
@@ -50,8 +50,6 @@ def generate_frames():
 
         except Exception as e:
             print(f"[ERROR] Issue reading capture.jpg: {e}")
-            # Decide if you want to end the stream on read errors
-            break
 
         # Always serve a frame (fallback to last valid if necessary)
         if last_valid_frame:
@@ -61,7 +59,6 @@ def generate_frames():
             )
         else:
             print("[ERROR] No valid frame available; ending video stream.")
-            break
 
         # Adjust frame rate as needed
         time.sleep(0.8)  # ~20 FPS
