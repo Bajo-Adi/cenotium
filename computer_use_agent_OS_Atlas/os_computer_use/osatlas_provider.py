@@ -1,5 +1,5 @@
 from gradio_client import Client, handle_file
-from os_computer_use.logging import logger
+from os_computer_use.logging_internal import logger
 from os_computer_use.grounding import extract_bbox_midpoint
 
 import os

@@ -1,6 +1,6 @@
 from os_computer_use.streaming import Sandbox, DisplayClient, Browser
 from os_computer_use.sandbox_agent import SandboxAgent
-from os_computer_use.logging import Logger
+from os_computer_use.logging_internal import Logger
 import asyncio
 import argparse
 import threading
@@ -22,7 +22,7 @@ os.environ["E2B_API_KEY"] = os.getenv("E2B_API_KEY")
 async def start(user_input=None, output_dir=None, added_context=None):
     sandbox = None
     client = None
-
+    message = None
     try:
         sandbox = Sandbox(template="desktop-dev-v2")
 
@@ -65,7 +65,6 @@ async def start(user_input=None, output_dir=None, added_context=None):
 
         # Run the agent, and go back to the prompt if the user presses ctl-c
         else:
-            message = None
             try:
                 response = agent.run(
                     user_input, added_context=added_context
@@ -79,7 +78,7 @@ async def start(user_input=None, output_dir=None, added_context=None):
                     indent=4,
                 )
             except KeyboardInterrupt:
-                logger.warning("User interrupted the execution via keyboard input.")
+                logger.log("User interrupted the execution via keyboard input.")
                 message = json.dumps(
                     {
                         "status": "error",
@@ -93,7 +92,7 @@ async def start(user_input=None, output_dir=None, added_context=None):
                     indent=4,
                 )
             except Exception as e:
-                logger.error(f"An unexpected error occurred: {e}")
+                logger.log(f"An unexpected error occurred: {e}")
                 message = json.dumps(
                     {
                         "status": "error",
@@ -135,7 +134,7 @@ async def start(user_input=None, output_dir=None, added_context=None):
         except Exception as e:
             print(f"Error stopping VNC client: {str(e)}")
 
-        return message
+    return message
 
 
 def initialize_output_directory(directory_format):
@@ -167,7 +166,7 @@ def main():
             user_input=args.prompt,
             output_dir=output_dir,
             added_context=(
-                parser.context if parser.context else None
+                args.context if args.context else None
             ),  # May or may not exist
         )
     )

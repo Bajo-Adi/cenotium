@@ -1,7 +1,10 @@
 from os_computer_use.config import vision_model, action_model, grounding_model
 from os_computer_use.llm_provider import Message
-from os_computer_use.logging import logger
+from os_computer_use.logging_internal import logger
 from os_computer_use.grounding import draw_big_dot
+import asyncio
+from os_computer_use.react_agent import *
+
 
 import shlex
 import os
@@ -172,6 +175,9 @@ class SandboxAgent:
 
     # Added context is any user preferences
     def run(self, instruction, added_context=None):  # The agent running function
+        # Fixing
+        # response = run_agent(instruction, added_context)
+        # logger.log(f"ORIGINAL FORMATTED QUERY: {response}")
         self.messages.append(Message(f"OBJECTIVE: {instruction}"))  # To the Model
         logger.log(f"USER: {instruction}", print=False)
         should_continue = True
