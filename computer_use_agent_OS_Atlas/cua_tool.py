@@ -11,6 +11,7 @@ def browser_task_tool(prompt: str, context: str = "") -> str:
     Tool to interact with web pages or perform tasks requiring browser automation.
     The input format is strictly a JSON string with two keys: 'prompt' and 'context'.
     Example: '{"prompt": "Fetch the current weather in SF", "context": "Use the browser tabs"}'
+    "This only kicks off the jobs!"
     """
 
     # Prepare the payload

@@ -52,6 +52,30 @@ async def run_task(request: TaskRequest):
     return {"message": f"Task started successfully in thread {thread.name}."}
 
 
+@app.post("/run-perplexity/")
+async def run_perplexity(request: TaskRequest):
+    """
+    Endpoint to trigger a Perplexity task in a separate thread.
+    """
+    thread = Thread(target=run_task_in_thread, args=(request.prompt, request.context))
+    thread.daemon = True  # Allows thread to exit when main process exits
+    thread.start()
+
+    return {"message": f"Task started successfully in thread {thread.name}."}
+
+
+@app.post("/run-twilio/")
+def run_twilio(request: TaskRequest):
+    """
+    Endpoint to trigger a Twilio task in a separate thread.
+    """
+    thread = Thread(target=run_task_in_thread, args=(request.prompt, request.context))
+    thread.daemon = True  # Allows thread to exit when main process exits
+    thread.start()
+
+    return {"message": f"Task started successfully in thread {thread.name}."}
+
+
 if __name__ == "__main__":
     import uvicorn
 
