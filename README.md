@@ -4,11 +4,11 @@
 Cenotium is revolutionizing web interaction by creating a new paradigm for AI agents to navigate, interact with, and automate web tasks autonomously.
 
 # 🚀 Key Features
-/ 🌍 Web Schema Transformer
-/ Extracts website HTML, images, and UI components
-/ Utilizes Vision, Grounding, and Action models
-/ Structures web pages for AI interaction
-/ Stores structured data in Supabase for efficient recall
+  🌍 Web Schema Transformer  
+  Extracts website HTML, images, and UI components  
+  Utilizes Vision, Grounding, and Action models  
+  Structures web pages for AI interaction  
+  Stores structured data in Supabase for efficient recall
 
 # 🤖 AI-Powered Agent Manager
 / LLM Compiler with RAG-based prompt optimization
