@@ -52,14 +52,20 @@ callback_manager = CallbackManager(handlers=[callback_handler])
 load_dotenv(override=True)
 
 # Define the prompt for the agent
-prompt = "You are a helpful assistant."
+prompt = (
+    "You are a helpful assistant WHO CAN USE A BROWSER ACCESSING TOOL (browser_task)."
+)
 
 # Initialize the language model
 llm = ChatOpenAI(model="gpt-4o")
 
 # Create the agent executor with the callback manager
 agent_executor = create_react_agent(llm, tools, state_modifier=prompt).with_config(
-    callback_manager=callback_manager, return_intermediate_steps=True, verbose=True
+    callback_manager=callback_manager,
+    return_intermediate_steps=True,
+    verbose=True,
+    allow_dangerous_code=True,
+    allow_dangerous_requests=True,
 )
 # 2. Planner (WITH TOOL CALLS)
 
@@ -95,8 +101,10 @@ planner_prompt = ChatPromptTemplate.from_messages(
             """For the given objective, come up with a simple step by step plan. \
 This plan should involve individual tasks, that if executed correctly will yield the correct answer. Do not add any superfluous steps. \
 The result of the final step should be the final answer. Make sure that each step has all the information needed - do not skip steps.
-Use the "Added User Context" to get the objective, taking SUBJECTIVE DECISIONS AS NECESSARY. However if there ARE ANY FINANCIAL TRANSACTIONS OR SENSITIVE INFORMATION REQUIRED, you can respond directly to the user.
-YOUR RESPONSE TO YTHE USER MUST INCLUDE A HIGHLY DETAILED REPORT OF THE RESULTS OF YOUR PLAN!!""",
+Use the "Added User Context" to get the objective, taking SUBJECTIVE DECISIONS AS NECESSARY.
+YOU MUST USE THE BROWSER TOOL (browser_task) FOR FOR ALL BROWSER REALTED TASKS!!
+YOU MUST ADHERE TO THE INPUT SPECIFICATIONS OF EVERY TOOL STRICTLY!!
+YOUR RESPONSE TO THE USER MUST INCLUDE A HIGHLY DETAILED REPORT OF THE RESULTS OF YOUR PLAN!!""",
         ),
         ("placeholder", "{messages}"),
     ]
@@ -136,8 +144,10 @@ Your original plan was this:
 {plan}
 You have currently done the follow steps:
 {past_steps}
-Update your plan accordingly. If no more steps are needed OR VRAM is LOW and you can return to the user, then respond with that. Otherwise, fill out the plan. Only add steps to the plan that still NEED to be done. Do not return previously done steps as part of the plan. 
-YOUR RESPONSE TO YTHE USER MUST INCLUDE A HIGHLY DETAILED REPORT OF THE RESULTS OF YOUR PLAN!!
+Update your plan accordingly. If no more steps are needed then respond with that. Otherwise, fill out the plan. Only add steps to the plan that still NEED to be done. Do not return previously done steps as part of the plan. 
+YOU MUST USE THE BROWSER TOOL (browser_task) FOR FOR ALL BROWSER REALTED TASKS!!
+YOU MUST ADHERE TO THE INPUT SPECIFICATIONS OF EVERY TOOL STRICTLY!!
+YOUR RESPONSE TO THE USER MUST INCLUDE A HIGHLY DETAILED REPORT OF THE RESULTS OF YOUR PLAN!!
 """
 )
 
@@ -388,14 +398,13 @@ async def format_and_run_query(query: str, user_context: str = ""):
         }
 
 
-# # Example usage in an async environment
-# if __name__ == "__main__":
-#     query = "Explain quantum mechanics"
-#     user_context = "Focus on beginner-friendly concepts"
+# Example usage in an async environment
+if __name__ == "__main__":
+    query = "Use the browser tool to tell me the time"
+    user_context = ""
 
-
-#     response = asyncio.run(format_and_run_query(query, user_context))
-#     print(json.dumps(response, indent=4))
-def run_agent(query, user_context):
     response = asyncio.run(format_and_run_query(query, user_context))
-    return response
+    print(json.dumps(response, indent=4))
+# def run_agent(query, user_context):
+#     response = asyncio.run(format_and_run_query(query, user_context))
+#     return response

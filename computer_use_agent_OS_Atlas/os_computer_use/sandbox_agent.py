@@ -141,6 +141,27 @@ class SandboxAgent:
         x, y = position
         self.sandbox.move_mouse(x, y)
         click_command()
+
+        # Save query and position to a file
+        log_data = {"query": query, "position": position}
+        log_file = "click_logs.json"
+
+        # Logs it to a file
+        # Append to JSON file (creating if necessary)
+        if os.path.exists(log_file):
+            with open(log_file, "r") as f:
+                try:
+                    data = json.load(f)
+                except json.JSONDecodeError:
+                    data = []
+        else:
+            data = []
+
+        data.append(log_data)
+
+        with open(log_file, "w") as f:
+            json.dump(data, f, indent=4)
+
         return f"The mouse has {action_name}ed."
 
     @tool(
