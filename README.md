@@ -19,16 +19,16 @@ Cenotium is revolutionizing web interaction by creating a new paradigm for AI ag
 
 # 🔗 Network of AI Agents
 
-- Perplexity Search Agent: Real-time web information querying
-- Twilio Calling Agent: Autonomous calling and messaging
-- Browser Activation Agent: UI element interaction
+-Perplexity Search Agent: Real-time web information querying
+-Twilio Calling Agent: Autonomous calling and messaging
+-Browser Activation Agent: UI element interaction
 
 # 🔒 Security & Trust Layer
 
-- Global & Local Trust Core (EigenTrust + PageRank)
-- Fernet Symmetric Encryption
-- Secure inter-agent communication
-- Persistent storage with Redis & Supabase
+-Global & Local Trust Core (EigenTrust + PageRank)
+-Fernet Symmetric Encryption
+-Secure inter-agent communication
+-Persistent storage with Redis & Supabase
 
 # 🛠️ Technologies
 -Languages & Frameworks
@@ -73,10 +73,10 @@ Perplexity AI API
 
 # 🚧 Key Challenges Solved
 
-- Converting unstructured HTML to agent-compatible schemas
-- Efficient prompt optimization using RAG
-- Implementing robust security and trust mechanisms
-- Creating a scalable, modular multi-agent system
+-Converting unstructured HTML to agent-compatible schemas
+-Efficient prompt optimization using RAG
+-Implementing robust security and trust mechanisms
+-Creating a scalable, modular multi-agent system
 
 # 🔍 Unique Insights
 
@@ -94,12 +94,12 @@ Perplexity AI API
 
 
 
-🤝 Contributing
-<a href="https://github.com/abhipi" target="_blank">ABHISHEK PILLAI</a>
-<a href="https://github.com/Shrey1306" target="_blank">SHREY GUPTA</a>
-<a href="https://github.com/ayushgharat" target="_blank">AYUSH GHARAT</a>
-<a href="https://github.com/Bajo-Adi" target="_blank">ADITYA BAJORIA</a>
+# 🤝 Contributing
+-<a href="https://github.com/abhipi" target="_blank">Abhishek Pillai</a>
+-<a href="https://github.com/Shrey1306" target="_blank">Shrey Gupta</a>
+-<a href="https://github.com/ayushgharat" target="_blank">Ayush Gharat</a>
+-<a href="https://github.com/Bajo-Adi" target="_blank">Aditya Bajoria</a>
 
 
 
-# Cenotium: Redefining Web Interaction for AI Agents 🌐🤖
+Cenotium: Redefining Web Interaction for AI Agents 🌐🤖
