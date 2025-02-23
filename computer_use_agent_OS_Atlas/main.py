@@ -61,6 +61,7 @@ async def start(user_input=None, output_dir=None, added_context=None):
                         "Provide a non-empty string as input.",
                         "Check if the calling function correctly supplies the user input.",
                     ],
+                    "port": port,  # For Stream
                 },
                 indent=4,
             )
@@ -75,6 +76,7 @@ async def start(user_input=None, output_dir=None, added_context=None):
                         "status": "success",
                         "message": "Agent processed the request successfully.",
                         "response": response,
+                        "port": port,  # For Stream
                     },
                     indent=4,
                 )
@@ -89,6 +91,7 @@ async def start(user_input=None, output_dir=None, added_context=None):
                             "Restart the script if you stopped it accidentally.",
                             "Use a proper exit command instead of a keyboard interrupt.",
                         ],
+                        "port": port,  # For Stream
                     },
                     indent=4,
                 )
@@ -103,6 +106,7 @@ async def start(user_input=None, output_dir=None, added_context=None):
                             "Try restarting the script.",
                             "Check for missing dependencies or incorrect configurations.",
                         ],
+                        "port": port,  # For Stream
                     },
                     indent=4,
                 )
