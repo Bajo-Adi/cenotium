@@ -6,7 +6,10 @@ __pycache__/
 *.db
 
 # Environment variables
-.env
+*.env
 
 # Agent output files
 /output
+
+*.env
+agent_activity.log

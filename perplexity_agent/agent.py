@@ -7,10 +7,10 @@ Update as of 02/10/2025:
 """
 
 
-from tools import twilio_tool
+from .tools import perplexity_tool
 from langchain.tools import Tool
 
-tools = [twilio_tool]  # Add tools as needed
+tools = [perplexity_tool]  # Add tools as needed
 from langchain import hub
 from langchain_openai import ChatOpenAI
 from langchain_core.callbacks import CallbackManager, BaseCallbackHandler
@@ -98,10 +98,7 @@ planner_prompt = ChatPromptTemplate.from_messages(
 This plan should involve individual tasks, that if executed correctly will yield the correct answer. Do not add any superfluous steps. \
 The result of the final step should be the final answer. Make sure that each step has all the information needed - do not skip steps.
 Use the "Added User Context" to get the objective, taking SUBJECTIVE DECISIONS AS NECESSARY. However if there ARE ANY FINANCIAL TRANSACTIONS OR SENSITIVE INFORMATION REQUIRED, you can respond directly to the user.
-YOUR RESPONSE TO THE USER MUST INCLUDE A HIGHLY DETAILED REPORT OF THE RESULTS OF YOUR PLAN!!
-You don't need to create a Twilio account or handle API details. 
-The tool will manage all Twilio-related operations. Use the twilio_tool whenever you need to place a call! 
-Ensure each step has all necessary information.""",
+YOUR RESPONSE TO THE USER MUST INCLUDE A HIGHLY DETAILED REPORT OF THE RESULTS OF YOUR PLAN!!""",
         ),
         ("placeholder", "{messages}"),
     ]
@@ -405,25 +402,15 @@ def run_agent(query, user_context):
     response = asyncio.run(format_and_run_query(query, user_context))
     return response
 
-# perplexity_agent_tool = Tool(
-#     name="PerplexityAgent",
-#     func=run_agent,
-#     description="Use this tool to search the internet via the Perplexity API. Input: a search query string. Output: search results in JSON format."
-# )
-
 perplexity_agent_tool = Tool(
-    name="TwilioAgent",
+    name="PerplexityAgent",
     func=run_agent,
-    description="""Use this tool to place a call to a United States (+1) number and provide the agent with a message to say on the call. 
-    Input: A United States number in E.164 format and a message to say on the call. Output: A phone call to the specified number saying the message provided."""
+    description="Use this tool to search the internet via the Perplexity API. Input: a search query string. Output: search results in JSON format."
 )
 
 # if __name__ == "__main__":
 #     query = input("Enter your query: ")
 #     user_context = input("Enter additional context (optional): ")
-# #     ans = tools[0].run({
-# #     "to_number": "+14709977644",
-# #     "message": "hi"
-# # })
+
 #     response = run_agent(query, user_context)
 #     print(response)
