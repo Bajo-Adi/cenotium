@@ -8,6 +8,7 @@ import threading
 
 from flask import Flask, Response, render_template_string
 from dotenv import load_dotenv
+from flask_cors import CORS
 
 # Load environment variables
 load_dotenv()
@@ -15,7 +16,7 @@ os.environ["E2B_API_KEY"] = os.getenv("E2B_API_KEY")
 
 # Flask application setup
 flask_app = Flask(__name__)
-
+CORS(flask_app)
 # Lock for thread safety when reading the image file
 image_lock = threading.Lock()
 

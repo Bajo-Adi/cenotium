@@ -42,6 +42,7 @@ class Logger:
             )
             with open(template_path, "r") as f:
                 self.log_file_template = f.read()
+            # self.log_file_template = ""
         except Exception as e:
             print(f"Warning: Could not load log template: {e}")
 
@@ -62,10 +63,10 @@ class Logger:
         """Write the complete log file using the stored log entries"""
         content = ""
         for entry in logs:
-            color_info = self.css_color_map.get(
-                entry["color"], (entry["color"], "#f5f5f5")
-            )
-            content += f"<p style='color:{color_info[0]};background:{color_info[1]}'>{entry['text']}</p>\n"
+            # color_info = self.css_color_map.get(
+            #     entry["color"], (entry["color"], "#f5f5f5")
+            # )
+            content = f"{entry['text']}"
 
         with open(filepath, "w") as f:
             f.write(self.log_file_template.replace("{{content}}", content))
