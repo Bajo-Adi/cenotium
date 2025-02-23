@@ -26,7 +26,32 @@ last_valid_frame = None
 image_path = "capture.jpg"
 
 # Path to text log file (this file should be updated dynamically)
-text_log_path = "os_computer_use/task_operator_log.txt"
+text_log_path = "log.html"
+
+
+import subprocess
+import time
+import sys
+import socket
+import threading
+
+
+def is_port_in_use(port):
+    """
+    Check if a port is currently in use.
+    """
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(("127.0.0.1", port)) == 0
+
+
+def find_next_available_port(start_port=5001):
+    """
+    Find the next available port, starting from start_port.
+    """
+    port = start_port
+    while is_port_in_use(port):
+        port += 1
+    return port
 
 
 # ISSUE: IDEALLY SHOULD END ON LACK OF A FRAME
@@ -82,28 +107,36 @@ def video_feed():
 @flask_app.route("/text_feed")
 def text_feed():
     """
-    Route that streams text from 'task_operator_log.txt' using
-    Server-Sent Events (SSE).
+    Streams the content of 'log.html' as raw HTML.
     """
 
     def text_stream():
-        last_sent_text = None  # Cache to prevent sending duplicate text
+        last_sent_text = None  # Cache to prevent duplicate content
         while True:
             try:
                 if os.path.exists(text_log_path):
-                    with open(text_log_path, "r") as f:
-                        current_text = f.read().strip()
+                    try:
+                        with open(text_log_path, "r", encoding="utf-8") as f:
+                            current_html = f.read().strip()
+                    except UnicodeDecodeError:
+                        print(
+                            "[WARNING] UTF-8 decoding failed, using ISO-8859-1 instead."
+                        )
+                        with open(text_log_path, "r", encoding="ISO-8859-1") as f:
+                            current_html = f.read().strip()
 
-                    if current_text != last_sent_text:  # Only send updates
-                        yield f"data: {current_text}\n\n"
-                        last_sent_text = current_text
-
+                    if (
+                        current_html != last_sent_text
+                    ):  # Send updates only when content changes
+                        # Replace newlines with spaces to prevent SSE parsing issues
+                        current_html = current_html.replace("\n", " ")
+                        yield f"data: {current_html}\n\n"  # SSE format requires '\n\n'
+                        last_sent_text = current_html
             except Exception as e:
-                print(f"[ERROR] Could not read text log file: {e}")
+                print(f"[ERROR] Could not read HTML log file: {e}")
 
-            time.sleep(1)  # Adjust refresh rate
+            time.sleep(0.5)  # Adjust refresh rate
 
-    # Use the 'text/event-stream' MIME type for SSE
     return Response(text_stream(), mimetype="text/event-stream")
 
 
@@ -129,29 +162,43 @@ def index():
         <div id="text-log" style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px;"></div>
 
         <script>
-          // Simple JavaScript to connect to /text_feed SSE endpoint
-          const textLogDiv = document.getElementById('text-log');
-          const evtSource = new EventSource('/text_feed');
+  // Connect to the /text_feed SSE endpoint
+  const textLogDiv = document.getElementById('text-log');
+  const evtSource = new EventSource('/text_feed');
 
-          evtSource.onmessage = function(event) {
-            textLogDiv.textContent = event.data;
-          };
+  evtSource.onmessage = function(event) {
+    textLogDiv.innerHTML = event.data;  // Inject raw HTML into the div
+  };
 
-          evtSource.onerror = function(err) {
-            console.error("SSE error:", err);
-          };
-        </script>
+  evtSource.onerror = function(err) {
+    console.error("SSE error:", err);
+  };
+</script>
+
       </body>
     </html>
     """
     return render_template_string(html)
 
 
-def run_flask():
+def run_flask(port=5001):
     """
     Run the Flask app on all interfaces at port 5001.
     """
-    flask_app.run(host="0.0.0.0", port=5001, debug=False, use_reloader=False)
+    global image_path, text_log_path
+
+    # Set up folder paths dynamically
+    base_folder = f"server_data/{port}"
+    os.makedirs(base_folder, exist_ok=True)  # Ensure directory exists
+
+    image_path = os.path.join(base_folder, "capture.jpg")
+    text_log_path = os.path.join(base_folder, "log.html")
+
+    print(f"Starting Flask server on port {port}...")
+    print(f"Using image path: {image_path}")
+    print(f"Using text log path: {text_log_path}")
+
+    flask_app.run(host="0.0.0.0", port=port, debug=False, use_reloader=False)
 
 
 def start_flask_thread():
@@ -163,14 +210,32 @@ def start_flask_thread():
     print("✅ Flask server started on http://localhost:5001")
 
 
-if __name__ == "__main__":
-    # If you want to run this module standalone, just do:
-    start_flask_thread()
+# if __name__ == "__main__":
+#     # If you want to run this module standalone, just do:
+#     start_flask_thread()
 
-    # Keep the main thread alive or do other stuff
-    while True:
-        try:
-            time.sleep(1)
-        except KeyboardInterrupt:
-            print("Shutting down...")
-            break
+#     # Keep the main thread alive or do other stuff
+#     while True:
+#         try:
+#             time.sleep(1)
+#         except KeyboardInterrupt:
+#             print("Shutting down...")
+#             break
+
+import multiprocessing
+
+
+# Function to spawn a new Flask server dynamically
+# Function to spawn a new Flask server dynamically using multiprocessing
+def spawn_flask_server():
+    """Finds the next available port and starts a Flask server as a separate process."""
+    port = find_next_available_port()
+    print(f"Spawning new Flask server on port {port}...")
+
+    # Start the Flask server as a separate process
+    process = multiprocessing.Process(target=run_flask, args=(port,))
+    process.daemon = True  # Ensure the process terminates when the parent does
+    process.start()
+
+    time.sleep(2)  # Give the process time to initialize
+    return port, process

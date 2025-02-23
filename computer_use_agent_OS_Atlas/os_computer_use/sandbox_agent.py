@@ -25,7 +25,14 @@ tools = {
 
 class SandboxAgent:
 
-    def __init__(self, sandbox, output_dir=".", save_logs=True, additional_context=""):
+    def __init__(
+        self,
+        sandbox,
+        output_dir=".",
+        save_logs=True,
+        additional_context="",
+        port="5001",
+    ):
         super().__init__()
         self.messages = []  # Agent memory
         self.sandbox = sandbox  # E2B sandbox
@@ -35,8 +42,10 @@ class SandboxAgent:
         self.additional_context = ""  # User specific context
 
         # Set the log file location
+        base_folder = f"server_data/{port}"
         if save_logs:
-            logger.log_file = f"{output_dir}/log.html"
+            log_path = os.path.join(base_folder, "log.html")
+            logger.log_file = log_path  # Port specific logging
 
         print("The agent will use the following actions:")
         for action, details in tools.items():

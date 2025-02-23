@@ -5,7 +5,7 @@ import asyncio
 import argparse
 import threading
 import os_computer_use.streaming_api
-from os_computer_use.streaming_api import run_flask
+from os_computer_use.streaming_api import run_flask, spawn_flask_server
 import json
 import os
 from dotenv import load_dotenv
@@ -33,20 +33,22 @@ async def start(user_input=None, output_dir=None, added_context=None):
         # print("(The display client will start in five seconds.)")
         # If the display client is opened before the stream is ready, it will close immediately
         # await client.start(stream_url, user_input or ",Sandbox", delay=5)
+        port, process = spawn_flask_server()
 
-        agent = SandboxAgent(sandbox, output_dir, additional_context=added_context)
+        agent = SandboxAgent(
+            sandbox,
+            output_dir,
+            additional_context=added_context,
+            port=port,  # For text stream
+        )
 
         print("Starting the VNC server...")
         sandbox.vnc_server.start()
         vnc_url = sandbox.vnc_server.get_url()
 
         print("Starting the VNC client...")
-        browser = Browser()
+        browser = Browser(port=port)  # For video stream capture
         browser.start(vnc_url, user_input or "Sandbox")
-
-        flask_thread = threading.Thread(target=run_flask)
-        flask_thread.setDaemon(True)
-        flask_thread.start()
 
         if user_input is None:
             return json.dumps(

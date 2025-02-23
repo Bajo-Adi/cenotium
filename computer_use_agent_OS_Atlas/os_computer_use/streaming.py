@@ -71,8 +71,9 @@ class DisplayClient:
 
 # Client to show a VNC client to the sandbox
 class Browser:
-    def __init__(self):
+    def __init__(self, port):
         self.process = None
+        self.port = port
 
     def start(self, stream_url, title="Sandbox"):
         import subprocess
@@ -84,7 +85,7 @@ class Browser:
         try:
             # Start the browser script as a subprocess
             self.process = subprocess.Popen(
-                [sys.executable, script_path, stream_url, title],
+                [sys.executable, script_path, stream_url, title, str(self.port)],
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
             )
