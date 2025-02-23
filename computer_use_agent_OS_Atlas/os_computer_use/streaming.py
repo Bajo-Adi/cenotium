@@ -25,7 +25,8 @@ class Sandbox(SandboxBase):
     def kill(self):
         # Kill the streaming process along with the sandbox
         if hasattr(self, "process"):
-            subprocess.call(["taskkill", "/F", "/T", "/PID", str(self.process.pid)])
+            # subprocess.call(["taskkill", "/F", "/T", "/PID", str(self.process.pid)])
+            self.process.kill()
         super().kill()
 
 
@@ -95,7 +96,7 @@ class Browser:
     def stop(self):
         if self.process:
             try:
-                subprocess.call(["taskkill", "/F", "/T", "/PID", str(self.process.pid)])
+                os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
                 self.process = None
             except ProcessLookupError:
                 print("Browser process not found.")
