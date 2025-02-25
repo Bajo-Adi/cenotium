@@ -41,7 +41,7 @@ def home():
         unsafe_allow_html=True
     )
 
-    image_path = "./graphviz (6).png"
+    image_path = "Streamlit/graphviz (6).png"
     
     image_base64 = get_base64(image_path)
 
