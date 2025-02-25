@@ -41,7 +41,7 @@ def home():
         unsafe_allow_html=True
     )
 
-    image_path = "/Users/aditya/Downloads/graphviz (6).png"
+    image_path = "graphviz (6).png"
     
     image_base64 = get_base64(image_path)
 
@@ -148,7 +148,7 @@ def scraper_page():
     All extracted data—including **HTML, images, descriptions, and bounding box coordinates**—is stored in **Supabase**, ensuring that agents can efficiently access structured representations of websites without needing to reprocess pages on every visit.
     """)
 
-    image_path = "/Users/aditya/Desktop/Supabase.png"
+    image_path = "Supabase.png"
     
     image_base64 = get_base64(image_path)
 
@@ -181,7 +181,7 @@ def agents_page():
     <h1 style="text-align: center;">Agents and the Agent Manager: Architecting an Autonomous Multi-Agent System</h1>
     """, unsafe_allow_html=True)
 
-    image_path = "/Users/aditya/Downloads/WhatsApp Image 2025-02-23 at 08.57.33.jpeg"
+    image_path = "WhatsApp Image 2025-02-23 at 08.57.33.jpeg"
     
     image_base64 = get_base64(image_path)
 
@@ -207,7 +207,7 @@ def agents_page():
     st.write("""
     When a user provides a prompt, it is first processed by the **Agent Compiler**, an intelligent module powered by **LLM Compiler**. This compiler contextualizes the prompt using historical user data stored in a **Knowledge Graph**.""")
 
-    image_path = "/Users/aditya/Downloads/graph.png"
+    image_path = "graph.png"
     
     image_base64 = get_base64(image_path)
 
@@ -251,7 +251,7 @@ def agents_page():
     This structured approach ensures complex, multi-step operations like booking a flight, automating a workflow, or gathering research are handled **autonomously and efficiently**.
     """)
 
-    image_path = "/Users/aditya/Downloads/WhatsApp Image 2025-02-23 at 09.10.46.jpeg"
+    image_path = "WhatsApp Image 2025-02-23 at 09.10.46.jpeg"
     
     image_base64 = get_base64(image_path)
 
