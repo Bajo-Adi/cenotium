@@ -69,10 +69,10 @@ This transformation demands a robust framework that supports agent-to-agent inte
     """)
 
     url = "https://devpost.com/software/cenotium?ref_content=my-projects-tab&ref_feature=my_projects"
-    st.write("Our Devpost [link](%s)" % url)
+    st.write("[Devpost](%s)" % url)
 
     url = "https://github.com/abhipi/cenotium"
-    st.write("Our Github [link](%s)" % url)
+    st.write("[Github](%s)" % url)
 
 def scraper_page():
     st.markdown(
