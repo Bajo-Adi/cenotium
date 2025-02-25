@@ -68,6 +68,12 @@ However, today’s websites are built for human users, not AI agents. They rely 
 This transformation demands a robust framework that supports agent-to-agent interactions, enforces trust mechanisms, and safeguards the integrity of the ecosystem. In the sections ahead, we will explore the key components that power this next-generation internet—how it is structured, how agents are managed, and how we ensure security and trust in a world where machines, not humans, take the lead.
     """)
 
+url = "https://devpost.com/software/cenotium?ref_content=my-projects-tab&ref_feature=my_projects"
+st.markdown("Our Devpost [link](%s)" % url)
+
+url = "https://github.com/abhipi/cenotium"
+st.markdown("Our Github [link](%s)" % url)
+
 def scraper_page():
     st.markdown(
         """
